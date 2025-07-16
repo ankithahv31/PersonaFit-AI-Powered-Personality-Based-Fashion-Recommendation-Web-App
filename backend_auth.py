@@ -14,14 +14,17 @@ import cv2
 import numpy as np
 from skimage.feature import graycomatrix, graycoprops
 from fastapi.responses import FileResponse
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Config
-SECRET_KEY = "supersecretkey"  # Change this in production
+SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey")  # Change this in production
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 # Database setup
-SQLALCHEMY_DATABASE_URL = "sqlite:///./users.db"
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./users.db")
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
