@@ -7,3 +7,4 @@ scikit-learn
 opencv-python
 scikit-image
 joblib 
+python-jose 
