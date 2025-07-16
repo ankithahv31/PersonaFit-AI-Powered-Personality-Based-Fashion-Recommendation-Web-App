@@ -45,10 +45,11 @@ function Dashboard() {
     try {
       const formData = new FormData();
       imageFiles.forEach((file) => formData.append('files', file));
-      const res = await fetch('http://localhost:8000/classify-images/', {
-        method: 'POST',
-        body: formData,
-      });
+    const API_URL = process.env.REACT_APP_API_URL;
+const res = await fetch(`${API_URL}/classify-images/`, {
+  method: 'POST',
+  body: formData,
+});
       if (!res.ok) throw new Error('Failed to process images');
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
