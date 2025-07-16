@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+python-dotenv
+sqlalchemy
+passlib[bcrypt]
+scikit-learn
+opencv-python
+scikit-image
+joblib 
