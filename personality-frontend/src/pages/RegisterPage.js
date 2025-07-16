@@ -43,6 +43,7 @@ function RegisterPage() {
         email: form.email,
         password: form.password,
       });
+      console.log(res.data);
       setSuccess('Registration successful! You can now log in.');
       setForm({ username: '', email: '', password: '', confirmPassword: '' });
     } catch (err) {
