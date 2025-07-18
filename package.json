@@ -1,7 +1,7 @@
 {
 
   "dependencies": {
-    "axios": "^1.10.0"
+    "axios": "^1.10.0",
 
   "name": "personality-frontend",
   "version": "0.1.0",
