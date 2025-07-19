@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { Container, TextField, Button, Typography, Card, CardContent, Box, Alert, Snackbar } from '@mui/material';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import api from '../api';
-import { useNavigate } from 'react-router-dom';
-
 function RegisterPage() {
   const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
   const [loading, setLoading] = useState(false);
@@ -11,7 +9,6 @@ function RegisterPage() {
   const [error, setError] = useState('');
   const [showHint, setShowHint] = useState(false);
   const [showEmailInvalid, setShowEmailInvalid] = useState(false);
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -44,7 +41,7 @@ function RegisterPage() {
     }
     setLoading(true);
     try {
-      const res = await api.post('/register', {
+      await api.post('/register', {
         username: form.username,
         email: form.email,
         password: form.password,

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Container, Typography, Card, CardContent, Box, Button, LinearProgress, Alert, Snackbar, Grid, Paper } from '@mui/material';
+import { Container, Typography, Box, Button, LinearProgress, Alert, Snackbar, Grid, Paper } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DownloadIcon from '@mui/icons-material/Download';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 
 function Dashboard() {
   const [files, setFiles] = useState([]);
