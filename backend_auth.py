@@ -13,8 +13,12 @@ import joblib
 import cv2
 import numpy as np
 from skimage.feature import graycomatrix, graycoprops
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from dotenv import load_dotenv
+import uuid
+import threading
+import time
+from typing import Dict, Any
 
 load_dotenv()
 
@@ -32,6 +36,9 @@ Base = declarative_base()
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# Job storage for progress tracking
+jobs: Dict[str, Dict[str, Any]] = {}
+
 def get_password_hash(password):
     return pwd_context.hash(password)
 
@@ -41,6 +48,8 @@ def verify_password(plain_password, hashed_password):
 # JWT helpers
 def create_access_token(data: dict):
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+
+
 
 # User model
 class User(Base):
@@ -63,11 +72,13 @@ class UserOut(BaseModel):
     username: str
     email: str
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
 
 # FastAPI app
 app = FastAPI()
@@ -108,6 +119,8 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     token = create_access_token({"sub": user.username})
     return {"access_token": token, "token_type": "bearer"}
 
+
+
 def extract_features(path):
     img = cv2.imread(path)
     if img is None:
@@ -125,43 +138,120 @@ def extract_features(path):
     edge_density = np.sum(edges>0)/(256*256)
     return np.hstack([hist, texture, edge_density])
 
-@app.post("/classify-images/")
-async def classify_images(files: list[UploadFile] = File(...), background_tasks: BackgroundTasks = None):
-    import uuid
-    model = joblib.load("rf_personality_model_sheet2_new.pkl")
-    categories = ["Openness", "Conscientiousness", "Extraversion", "Neuroticism", "Agreeableness"]
-    with tempfile.TemporaryDirectory() as temp_dir:
-        # Save uploaded files
-        img_paths = []
-        for file in files:
-            img_path = os.path.join(temp_dir, os.path.basename(file.filename))
-            with open(img_path, "wb") as f:
-                shutil.copyfileobj(file.file, f)
-            img_paths.append(img_path)
-        # Predict and copy to category folders
-        out_dir = os.path.join(temp_dir, "output")
-        os.makedirs(out_dir, exist_ok=True)
-        for img_path in img_paths:
+def process_images_job(job_id: str, img_paths: list):
+    """Background job to process images"""
+    try:
+        model = joblib.load("rf_personality_model_sheet2_new.pkl")
+        categories = ["Openness", "Conscientiousness", "Extraversion", "Neuroticism", "Agreeableness"]
+        
+        jobs[job_id]["status"] = "processing"
+        jobs[job_id]["processed"] = 0
+        jobs[job_id]["total"] = len(img_paths)
+        
+        # Create output directory
+        output_dir = os.path.join(os.getcwd(), f"output_{job_id}")
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Process each image
+        for i, img_path in enumerate(img_paths):
             features = extract_features(img_path)
-            if features is None:
-                continue
-            pred = model.predict([features])[0]
-            cat_dir = os.path.join(out_dir, pred)
-            os.makedirs(cat_dir, exist_ok=True)
-            shutil.copy(img_path, cat_dir)
-        # Zip the output folders
-        import uuid
-        zip_path = os.path.join(temp_dir, f"result_{uuid.uuid4().hex}.zip")
+            if features is not None:
+                pred = model.predict([features])[0]
+                cat_dir = os.path.join(output_dir, pred)
+                os.makedirs(cat_dir, exist_ok=True)
+                shutil.copy(img_path, cat_dir)
+            
+            jobs[job_id]["processed"] = i + 1
+            time.sleep(0.1)  # Simulate processing time
+        
+        # Create ZIP file
+        zip_path = os.path.join(os.getcwd(), f"result_{job_id}.zip")
         with zipfile.ZipFile(zip_path, "w") as zipf:
-            for cat in os.listdir(out_dir):
-                cat_folder = os.path.join(out_dir, cat)
+            for cat in os.listdir(output_dir):
+                cat_folder = os.path.join(output_dir, cat)
                 for fname in os.listdir(cat_folder):
                     fpath = os.path.join(cat_folder, fname)
                     zipf.write(fpath, arcname=os.path.join(cat, fname))
-        # Move zip out of temp_dir so it persists after the with block
-        final_zip = os.path.join(os.getcwd(), os.path.basename(zip_path))
-        shutil.copy(zip_path, final_zip)
-        # Schedule deletion after response
-        if background_tasks is not None:
-            background_tasks.add_task(os.remove, final_zip)
-        return FileResponse(final_zip, filename="categorized_images.zip") 
+        
+        jobs[job_id]["status"] = "completed"
+        jobs[job_id]["zip_path"] = zip_path
+        
+        # Clean up output directory
+        shutil.rmtree(output_dir)
+        
+    except Exception as e:
+        jobs[job_id]["status"] = "error"
+        jobs[job_id]["error"] = str(e)
+
+@app.post("/classify-images/")
+async def classify_images(files: list[UploadFile] = File(...)):
+    # Generate job ID
+    job_id = str(uuid.uuid4())
+    
+    # Initialize job status
+    jobs[job_id] = {
+        "status": "uploading",
+        "processed": 0,
+        "total": 0,
+        "done": False
+    }
+    
+    # Save uploaded files
+    img_paths = []
+    temp_dir = os.path.join(os.getcwd(), f"temp_{job_id}")
+    os.makedirs(temp_dir, exist_ok=True)
+    
+    for file in files:
+        img_path = os.path.join(temp_dir, os.path.basename(file.filename))
+        with open(img_path, "wb") as f:
+            shutil.copyfileobj(file.file, f)
+        img_paths.append(img_path)
+    
+    jobs[job_id]["total"] = len(img_paths)
+    
+    # Start background processing
+    thread = threading.Thread(target=process_images_job, args=(job_id, img_paths))
+    thread.daemon = True
+    thread.start()
+    
+    return JSONResponse(content={"job_id": job_id})
+
+@app.get("/progress/{job_id}")
+async def get_progress(job_id: str):
+    if job_id not in jobs:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    job = jobs[job_id]
+    return {
+        "processed": job["processed"],
+        "total": job["total"],
+        "done": job["status"] == "completed",
+        "status": job["status"]
+    }
+
+@app.get("/result/{job_id}")
+async def get_result(job_id: str):
+    if job_id not in jobs:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    job = jobs[job_id]
+    if job["status"] != "completed":
+        raise HTTPException(status_code=400, detail="Job not completed")
+    
+    zip_path = job.get("zip_path")
+    if not zip_path or not os.path.exists(zip_path):
+        raise HTTPException(status_code=404, detail="Result file not found")
+    
+    # Clean up job data after serving
+    def cleanup():
+        time.sleep(5)  # Wait 5 seconds before cleanup
+        if job_id in jobs:
+            del jobs[job_id]
+        if os.path.exists(zip_path):
+            os.remove(zip_path)
+    
+    thread = threading.Thread(target=cleanup)
+    thread.daemon = True
+    thread.start()
+    
+    return FileResponse(zip_path, filename="categorized_images.zip") 

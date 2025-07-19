@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -16,6 +16,8 @@ import { useTheme } from '@mui/material/styles';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { Link as ScrollLink } from 'react-scroll';
 import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
+import { Fab, Zoom } from '@mui/material';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -24,6 +26,26 @@ function Navbar() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Handle scroll event to show/hide back to top button
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      setShowScrollTop(scrollTop > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   // Only show Features link on home page
   const showFeatures = location.pathname === '/';
@@ -220,6 +242,29 @@ function Navbar() {
           </Box>
         )}
       </Toolbar>
+      
+      {/* Back to Top Button */}
+      <Zoom in={showScrollTop}>
+        <Fab
+          color="primary"
+          size="large"
+          onClick={scrollToTop}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            bgcolor: '#111',
+            color: '#fff',
+            '&:hover': {
+              bgcolor: '#333',
+            },
+            zIndex: 1000,
+          }}
+          aria-label="back to top"
+        >
+          <KeyboardArrowUpIcon />
+        </Fab>
+      </Zoom>
     </AppBar>
   );
 }
