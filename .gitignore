@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-# Ignore environment variable files
-.env
-personality-frontend/.env 
-=======
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -26,4 +21,6 @@ personality-frontend/.env
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
->>>>>>> eb9b09f (Initial commit)
+
+# Ignore environment variable files
+.env

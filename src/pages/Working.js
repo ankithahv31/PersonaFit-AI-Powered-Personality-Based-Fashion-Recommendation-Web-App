@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Typography, Paper, Divider, Box, Grid, Avatar } from '@mui/material';
+import { Container, Typography, Paper, Box, Avatar } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LockIcon from '@mui/icons-material/Lock';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
