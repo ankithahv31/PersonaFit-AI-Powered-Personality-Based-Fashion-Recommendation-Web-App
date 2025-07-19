@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Box, Button, Typography, Container, Paper, Divider, Fade, Grid, Tabs, Tab, Box as MuiBox } from '@mui/material';
+import { Box, Button, Typography, Container, Paper, Divider, Fade, Tabs, Tab, Box as MuiBox } from '@mui/material';
 import { Link } from 'react-router-dom';
 import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
 import StyleIcon from '@mui/icons-material/Style';
@@ -8,28 +8,11 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import BarChartIcon from '@mui/icons-material/BarChart';
 import LockIcon from '@mui/icons-material/Lock';
-import EqualizerIcon from '@mui/icons-material/Equalizer';
-import AutoAwesomeMosaicIcon from '@mui/icons-material/AutoAwesomeMosaic';
-import { Timeline, TimelineItem, TimelineSeparator, TimelineDot, TimelineConnector, TimelineContent } from '@mui/lab';
 
 const bgImage = 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1500&q=80';
 
-const carouselItems = [
-  {
-    icon: <EmojiObjectsIcon sx={{ fontSize: 64, color: '#1976d2' }} />, title: 'AI-Powered',
-    desc: 'Advanced machine learning maps dress features to personality traits.'
-  },
-  {
-    icon: <StyleIcon sx={{ fontSize: 64, color: '#1976d2' }} />, title: 'Personalized Fashion',
-    desc: 'Recommendations go beyond demographics to psychological preferences.'
-  },
-  {
-    icon: <PsychologyIcon sx={{ fontSize: 64, color: '#1976d2' }} />, title: 'Reduce Returns',
-    desc: 'Aligning design with personality helps lower product return rates.'
-  }
-];
+
 
 function LandingPage() {
   const sliderSettings = {
