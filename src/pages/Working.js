@@ -60,18 +60,16 @@ function Working() {
         <Typography variant="h3" sx={{ fontWeight: 800, mb: 2, color: '#111', textAlign: 'center', letterSpacing: 1 }}>
           How Our System Works
         </Typography>
-        {/* First row: 3 cards, always in one row */}
+        {/* First row: 3 cards, responsive layout */}
         <Box
           sx={{
             display: 'flex',
-            flexDirection: 'row',
+            flexDirection: { xs: 'column', md: 'row' },
             justifyContent: 'center',
             alignItems: 'stretch',
-            gap: 4,
+            gap: { xs: 2, md: 4 },
             mb: 4,
-            flexWrap: 'nowrap',
-            overflowX: { xs: 'auto', md: 'visible' },
-            maxWidth: '100vw'
+            flexWrap: 'wrap'
           }}
         >
           {steps.slice(0, 3).map((step, idx) => (
@@ -79,11 +77,11 @@ function Working() {
               key={step.label}
               elevation={3}
               sx={{
-                p: 3,
+                p: { xs: 2, md: 3 },
                 borderRadius: 3,
-                width: 340,
-                minWidth: 260,
-                maxWidth: 360,
+                width: { xs: '100%', md: 340 },
+                minWidth: { xs: 'auto', md: 260 },
+                maxWidth: { xs: '100%', md: 360 },
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-start',
@@ -108,17 +106,15 @@ function Working() {
             </Paper>
           ))}
         </Box>
-        {/* Second row: 2 cards, always in one row and centered */}
+        {/* Second row: 2 cards, responsive layout */}
         <Box
           sx={{
             display: 'flex',
-            flexDirection: 'row',
+            flexDirection: { xs: 'column', md: 'row' },
             justifyContent: 'center',
             alignItems: 'stretch',
-            gap: 4,
-            flexWrap: 'nowrap',
-            overflowX: { xs: 'auto', md: 'visible' },
-            maxWidth: '100vw'
+            gap: { xs: 2, md: 4 },
+            flexWrap: 'wrap'
           }}
         >
           {steps.slice(3).map((step, idx) => (
@@ -126,11 +122,11 @@ function Working() {
               key={step.label}
               elevation={3}
               sx={{
-                p: 3,
+                p: { xs: 2, md: 3 },
                 borderRadius: 3,
-                width: 340,
-                minWidth: 260,
-                maxWidth: 360,
+                width: { xs: '100%', md: 340 },
+                minWidth: { xs: 'auto', md: 260 },
+                maxWidth: { xs: '100%', md: 360 },
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-start',

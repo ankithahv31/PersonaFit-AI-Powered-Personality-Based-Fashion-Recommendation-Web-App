@@ -124,25 +124,55 @@ function Navbar() {
               anchor="right"
               open={drawerOpen}
               onClose={() => setDrawerOpen(false)}
-              PaperProps={{ sx: { width: 220 } }}
+              PaperProps={{ 
+                sx: { 
+                  width: 220,
+                  bgcolor: '#111',
+                  color: '#fff'
+                } 
+              }}
             >
               <Box sx={{ mt: 2 }}>
                 <List>
                   {/* Home as router link */}
                   <ListItem disablePadding>
-                    <ListItemButton component={RouterLink} to="/" onClick={() => setDrawerOpen(false)}>
+                    <ListItemButton 
+                      component={RouterLink} 
+                      to="/" 
+                      onClick={() => setDrawerOpen(false)}
+                      sx={{ 
+                        color: '#fff',
+                        '&:hover': { bgcolor: '#333' }
+                      }}
+                    >
                       <ListItemText primary="Home" sx={{ color: '#fff' }} />
                     </ListItemButton>
                   </ListItem>
                   {/* About as router link */}
                   <ListItem disablePadding>
-                    <ListItemButton component={RouterLink} to="/about" onClick={() => setDrawerOpen(false)}>
+                    <ListItemButton 
+                      component={RouterLink} 
+                      to="/about" 
+                      onClick={() => setDrawerOpen(false)}
+                      sx={{ 
+                        color: '#fff',
+                        '&:hover': { bgcolor: '#333' }
+                      }}
+                    >
                       <ListItemText primary="About" sx={{ color: '#fff' }} />
                     </ListItemButton>
                   </ListItem>
                   {/* Guidelines as router link to working#guidelines */}
                   <ListItem disablePadding>
-                    <ListItemButton component={RouterLink} to="/working#guidelines" onClick={() => setDrawerOpen(false)}>
+                    <ListItemButton 
+                      component={RouterLink} 
+                      to="/working#guidelines" 
+                      onClick={() => setDrawerOpen(false)}
+                      sx={{ 
+                        color: '#fff',
+                        '&:hover': { bgcolor: '#333' }
+                      }}
+                    >
                       <ListItemText primary="Guidelines" sx={{ color: '#fff' }} />
                     </ListItemButton>
                   </ListItem>
@@ -156,6 +186,10 @@ function Navbar() {
                         duration={600}
                         offset={-70}
                         onClick={() => setDrawerOpen(false)}
+                        sx={{ 
+                          color: '#fff',
+                          '&:hover': { bgcolor: '#333' }
+                        }}
                       >
                         <ListItemText primary={link.label} sx={{ color: '#fff' }} />
                       </ListItemButton>
@@ -165,6 +199,10 @@ function Navbar() {
                     <ListItem key={link.label} disablePadding>
                       <ListItemButton
                         onClick={() => handleNavClick(link)}
+                        sx={{ 
+                          color: '#fff',
+                          '&:hover': { bgcolor: '#333' }
+                        }}
                       >
                         <ListItemText primary={link.label} sx={{ color: '#fff' }} />
                       </ListItemButton>
