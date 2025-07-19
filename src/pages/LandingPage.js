@@ -2,8 +2,6 @@ import React, { useRef, useState } from 'react';
 import { Box, Button, Typography, Container, Paper, Divider, Fade, Tabs, Tab, Box as MuiBox } from '@mui/material';
 import { Link } from 'react-router-dom';
 import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
-import StyleIcon from '@mui/icons-material/Style';
-import PsychologyIcon from '@mui/icons-material/Psychology';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
